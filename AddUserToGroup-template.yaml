@@ -1,0 +1,33 @@
+schemaVersion: "0.3"
+emergencyChange: false
+autoApprovable: false
+mainSteps:
+  - name: ApproveAction1
+    action: aws:approve
+    timeoutSeconds: 10000
+    inputs:
+      Message: Please approve this change request
+      EnhancedApprovals:
+        Approvers:
+          - approver: ScrumMasterGroup
+            type: IamGroup
+            minRequiredApprovals: 1
+        NotificationArn: "{{ Level1ApproverSnsTopicArn }}"
+executableRunBooks:
+  - name: AddUserToGroup-automation
+    version: $DEFAULT
+templateInformation: |2
+    # 変更情報
+    ## 1.  変更対象
+
+    ## 2.  変更内容
+
+    ## 3.  作業影響
+
+    ## 4.  作業計画
+
+    ## 5.  戻し計画
+parameters:
+  Level1ApproverSnsTopicArn:
+    type: String
+    description: Level 1 Approver SNS Topic Arn

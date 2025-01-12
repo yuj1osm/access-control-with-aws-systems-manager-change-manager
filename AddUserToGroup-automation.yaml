@@ -1,0 +1,35 @@
+description: |-
+  # 本番環境にスイッチロールするために、IAMユーザをグループへ追加し、Tagを付与する
+
+  ## 1. UserName は自身のIAMユーザ名を入力
+
+  ## 2. GroupName はスイッチロールするのために、所属させるグループ名を入力
+
+  ## 3. TTL は作業終了予定日時を YYYYMMDDhhmm 形式で入力
+  （例）作業終了予定日時が 2025/1/5 15:30 なら 202501051530 と入力
+schemaVersion: '0.3'
+assumeRole: 'arn:aws:iam::<accountID>:role/AWS-QuickSetup-SSMChangeMgr-MyAWSAdminAdminRole'
+parameters:
+  UserName:
+    type: String
+  GroupName:
+    type: String
+  TTL:
+    type: String
+mainSteps:
+  - name: AddUserToGroup
+    action: aws:executeAwsApi
+    inputs:
+      Service: iam
+      Api:  AddUserToGroup
+      GroupName: "{{ GroupName }}"
+      UserName: "{{ UserName }}"
+  - name: AddTag
+    action: 'aws:executeAwsApi'
+    inputs:
+      Service: iam
+      Api: TagUser
+      UserName: '{{UserName}}'
+      Tags:
+        - Key: '{{GroupName}}'
+          Value: '{{TTL}}'

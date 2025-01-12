@@ -1,0 +1,30 @@
+description: |-
+  # 本番環境にスイッチロールするためのグループからIAMユーザを離脱させ、Tagを削除する
+
+  ## 1. UserName は自身のIAMユーザ名を入力
+
+  ## 2.  GroupName は離脱するグループ名を入力
+
+schemaVersion: '0.3'
+assumeRole: 'arn:aws:iam::<accountID>:role/AWS-QuickSetup-SSMChangeMgr-MyAWSAdminAdminRole'
+parameters:
+  UserName:
+    type: String
+  GroupName:
+    type: String
+mainSteps:
+  - name: RemoveUserFromGroup
+    action: aws:executeAwsApi
+    inputs:
+      Service: iam
+      Api:  RemoveUserFromGroup
+      GroupName: "{{ GroupName }}"
+      UserName: "{{ UserName }}"
+  - name: RemoveTag
+    action: 'aws:executeAwsApi'
+    inputs:
+      Service: iam
+      Api: UntagUser
+      UserName: '{{UserName}}'
+      TagKeys:
+        - '{{GroupName}}'
